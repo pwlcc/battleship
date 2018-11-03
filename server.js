@@ -11,6 +11,7 @@ app.set('view engine', 'pug');
 io.on('connection', (socket) => {
     console.log('a user connected')
     socket.on('click', (data) => {
+        console.log(socket.id)
         console.log(data)
     });
 
