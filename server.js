@@ -1,10 +1,16 @@
 const express = require('express');
 
+
 const app = express()
+const port = 3000
+
+app.use(express.static('public'));
+app.set('view engine', 'pug');
 
 app.get('/', (req, res)=>{
-    res.write('test');
-    res.end();
+    res.render('index', {title: 'XD', message: 'This is a message'});
 });
 
-app.listen(8000);
+app.listen(port, () => {
+    console.log(`Server running at localhost:${port}`);
+});
