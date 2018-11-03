@@ -7,6 +7,7 @@ for (let i = 0; i < 20; i++) {
         td.setAttribute('col', j);
 
         td.addEventListener('click', function () {
+            socket.emit('click', {row: this.getAttribute('row'), col: this.getAttribute('col')})
             console.log(`row: ${this.getAttribute('row')}, col: ${this.getAttribute('col')}`)
         });
 
