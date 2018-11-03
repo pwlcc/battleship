@@ -21,13 +21,13 @@ for (let i = 0; i < 20; i++) {
             height: box_size,
             fill: '#fff',
             stroke: 'black',
-            strokeWidth: 1,
-            draggable: true,
+            strokeWidth: 1
         });
         box.on('click', () => {
             socket.emit('click', {x: box.getX()/(gap+box_size), y: box.getY()/(gap+box_size)})
             console.log('xd');
         });
+        
         box.on('mouseover', function () {
             this.setFill('#000');
             document.body.style.cursor = 'pointer';
@@ -48,6 +48,15 @@ let ship = new Konva.Rect({
     width:20,
     height:20,
     draggable: true
+})
+ship.on('dragmove', () => {
+    console.log('drag!')
+    ship.setX(ship.getX() - (ship.getX()%(gap+box_size)));
+    ship.setY(ship.getY() - (ship.getY()%(gap+box_size)));
+});
+ship.on('dragend', ()=>{
+    console.log('ship moved!');
+    console.log(`ship x: ${ship.getX()}, ship y: ${ship.getY()}`)
 })
 layer.add(ship);
 stage.add(layer);
