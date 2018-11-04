@@ -48,11 +48,23 @@ let ship = new Konva.Rect({
     width:20,
     height:20,
     draggable: true
-})
-ship.on('dragmove', () => {
+});
+let getMousePos = (canvas, evt) => {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: (evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
+        y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
+    };
+}
+ship.on('dragmove', (event) => {   
+    const canvas = layer.getCanvas()._canvas; 
+    let mousePos = getMousePos(canvas, event.evt);
+    mousePos.x -= stage.getX();
+    mousePos.y -= stage.getY();
+    console.log(mousePos)
     console.log('drag!')
-    ship.setX(ship.getX() - (ship.getX()%(gap+box_size)));
-    ship.setY(ship.getY() - (ship.getY()%(gap+box_size)));
+    ship.setX(mousePos.x - (mousePos.x%(gap+box_size)));
+    ship.setY(mousePos.y - (mousePos.y%(gap+box_size)));
 });
 ship.on('dragend', ()=>{
     console.log('ship moved!');
