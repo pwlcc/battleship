@@ -57,6 +57,6 @@ ship.on('dragmove', () => {
 ship.on('dragend', ()=>{
     console.log('ship moved!');
     console.log(`ship x: ${ship.getX()}, ship y: ${ship.getY()}`)
-})
+});
 layer.add(ship);
 stage.add(layer);
