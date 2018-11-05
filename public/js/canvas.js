@@ -11,52 +11,66 @@ var stage = new Konva.Stage({
 
 var layer = new Konva.Layer();
 let gap = 5;
-let box_size = 20;
-for (let i = 0; i < 20; i++) {
-    for (let j = 0; j < 20; j++) {
+let boxSize = 20;
+let gameSize = 10;
+for (let i = 0; i < gameSize; i++) {
+    for (let j = 0; j < gameSize; j++) {
         let box = new Konva.Rect({
-            x: (gap + box_size) * j,
-            y: (gap + box_size) * i,
-            width: box_size,
-            height: box_size,
+            x: (gap + boxSize) * j,
+            y: (gap + boxSize) * i,
+            width: boxSize,
+            height: boxSize,
             fill: '#fff',
             stroke: 'black',
             strokeWidth: 1
         });
         box.on('click', () => {
-            socket.emit('click', {x: box.getX()/(gap+box_size), y: box.getY()/(gap+box_size)})
-            console.log('xd');
+            socket.emit('click', {x: box.getX()/(gap+boxSize), y: box.getY()/(gap+boxSize)})
+            console.log('click!');
         });
         
         box.on('mouseover', function () {
-            this.setFill('#000');
             document.body.style.cursor = 'pointer';
-            layer.draw();
         });
         box.on('mouseout', function () {
-            this.setFill('#fff');
             document.body.style.cursor = 'default';
-            layer.draw();
         });
         layer.add(box);
     }
 }
-let ship = new Konva.Rect({
-    x:0,
-    y:550,
-    fill: 'red',
-    width:20,
-    height:20,
-    draggable: true
-})
-ship.on('dragmove', () => {
-    console.log('drag!')
-    ship.setX(ship.getX() - (ship.getX()%(gap+box_size)));
-    ship.setY(ship.getY() - (ship.getY()%(gap+box_size)));
-});
-ship.on('dragend', ()=>{
-    console.log('ship moved!');
-    console.log(`ship x: ${ship.getX()}, ship y: ${ship.getY()}`)
-});
-layer.add(ship);
+let getMousePos = (canvas, evt) => {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: (evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
+        y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
+    };
+};
+let ships = [5, 4, 4, 3, 3, 2, 2];
+let generateShips = (ships) => {
+    let counter = 0;
+    ships.forEach((ship)=>{
+        let shipRect = new Konva.Rect({
+            x:0,
+            y:gameSize * (boxSize + gap) + counter++*(boxSize + 2*gap),
+            fill: 'red',
+            width:ship * (boxSize + gap) - gap,
+            height:20,
+            draggable: true
+        });
+        shipRect.on('dragmove', (event) => {   
+            const canvas = layer.getCanvas()._canvas; 
+            let mousePos = getMousePos(canvas, event.evt);
+            mousePos.x -= stage.getX();
+            mousePos.y -= stage.getY();
+            shipRect.setX(mousePos.x - (mousePos.x%(gap+boxSize)));
+            shipRect.setY(mousePos.y - (mousePos.y%(gap+boxSize)));
+        });
+        shipRect.on('dragend', ()=>{
+            console.log('ship moved!');
+            console.log(`ship x: ${shipRect.getX()}, ship y: ${shipRect.getY()}`)
+        });
+        layer.add(shipRect);
+    });
+};
+generateShips(ships);
 stage.add(layer);
